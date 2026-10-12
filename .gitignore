@@ -36,6 +36,7 @@ data/processed/*
 
 # MLflow local tracking store
 mlruns/
+.mlruns/
 
 # Generated model artifacts
 artifacts/models/*
