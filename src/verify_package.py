@@ -2,15 +2,22 @@
 """Verify that the packaged model can be loaded and used independently."""
 
 import json
+import sys
 from pathlib import Path
 
 import joblib
 import pandas as pd
 
+# Resolve the repository root from this script's location.
+ROOT = Path(__file__).resolve().parents[1]
+
+# Ensure imports work when running: python src/verify_package.py
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from src.model_utils import ALL_FEATURES
 
 
-ROOT = Path(__file__).resolve().parents[1]
 MODEL_PATH = ROOT / "artifacts" / "models" / "final_model.joblib"
 METADATA_PATH = ROOT / "artifacts" / "models" / "model_metadata.json"
 DATA_PATH = ROOT / "data" / "processed" / "heart_disease_clean.csv"
@@ -29,7 +36,9 @@ def main():
 
     missing_features = set(ALL_FEATURES) - set(data.columns)
     if missing_features:
-        raise ValueError(f"Dataset is missing features: {sorted(missing_features)}")
+        raise ValueError(
+            f"Dataset is missing features: {sorted(missing_features)}"
+        )
 
     # Use a few real rows as a smoke test; preprocessing stays inside the pipeline.
     X = data.loc[:, ALL_FEATURES].head(5).copy()
@@ -54,7 +63,9 @@ def main():
     if not ((probabilities >= 0).all() and (probabilities <= 1).all()):
         raise AssertionError("Probabilities must be between 0 and 1.")
 
-    if not all(abs(float(row.sum()) - 1.0) < 1e-6 for row in probabilities):
+    if not all(
+        abs(float(row.sum()) - 1.0) < 1e-6 for row in probabilities
+    ):
         raise AssertionError("Each probability row must sum to 1.")
 
     print("Model package verification: PASSED")
