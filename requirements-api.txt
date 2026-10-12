@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+joblib
+numpy==1.26.4
+pandas==2.3.3
+scikit-learn==1.5.0
+prometheus-client
